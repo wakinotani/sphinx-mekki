@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sphinx-mekki"
+version = "0.8.0"
+authors = [
+  { name="Yoshiyuki Wakinotani", email="wakinotani@gmail.com" },
+]
+description = "A sphinx extension to embed images/downloads/CSSs/JSs to single HTML file."
+readme = "README.rst"
+requires-python = ">=3.8"
+classifiers = [
+  "Framework :: Sphinx",
+  "Framework :: Sphinx :: Extension",
+  "Framework :: Sphinx :: Theme",
+  "Development Status :: 5 - Production/Stable",
+  "License :: OSI Approved :: MIT License",
+  "Environment :: Web Environment",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: OS Independent",
+  "Topic :: Documentation :: Sphinx",
+  "Topic :: Software Development :: Documentation",
+  "Topic :: Text Processing :: Markup :: HTML",
+]
+
+[project.urls]
+Homepage = "https://github.com/wakinotani/sphinx-mekki"
+Issues = "https://github.com/wakinotani/sphinx-mekki/issues"
+
+[project.entry-points]
+"sphinx.builders" = { sphinx_mekki = "sphinx_mekki" }
+
+[tool.black]
+line-length = 119
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = ''
