@@ -21,7 +21,7 @@ from sphinx.writers.html import HTML5Translator
 from sphinx.environment import BuildEnvironment
 from sphinx.environment.collectors.toctree import TocTreeCollector
 
-__version__ = "0.8.0"
+__version__ = "0.8.1"
 
 logger = logging.getLogger(__name__)
 
