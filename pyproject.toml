@@ -30,6 +30,10 @@ classifiers = [
   "Topic :: Software Development :: Documentation",
   "Topic :: Text Processing :: Markup :: HTML",
 ]
+dependencies = [
+  "rjsmin",
+  "cssutils",
+]
 
 [project.urls]
 Homepage = "https://github.com/wakinotani/sphinx-mekki"
