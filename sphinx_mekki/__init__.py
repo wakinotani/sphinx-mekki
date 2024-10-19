@@ -41,9 +41,7 @@ def convert_to_data_uri(filename: str) -> str:
     return data_uri
 
 
-def embed_favicon(
-    app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node
-) -> None:
+def embed_favicon(app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node) -> None:
     favicon_url = app.builder.globalcontext["favicon_url"]
     if favicon_url and not isurl(favicon_url):
         # convert favicon file to data_URI
@@ -51,9 +49,7 @@ def embed_favicon(
         context["favicon_url"] = convert_to_data_uri(favicon_path)
 
 
-def embed_logo(
-    app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node
-) -> None:
+def embed_logo(app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node) -> None:
     logo_url = app.builder.globalcontext["logo_url"]
     if logo_url and not isurl(logo_url):
         # convert logo file to data_URI
@@ -61,9 +57,7 @@ def embed_logo(
         context["logo_url"] = convert_to_data_uri(logo_path)
 
 
-def setup_css_tag_helper(
-    app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node
-) -> None:
+def setup_css_tag_helper(app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node) -> None:
 
     pathto = context.get("pathto")
 
@@ -71,9 +65,7 @@ def setup_css_tag_helper(
         out = ""
         for rule in sheet.cssRules:
             if rule.type == cssutils.css.CSSRule.IMPORT_RULE:
-                css_path = os.path.abspath(
-                    os.path.join(app.outdir, "_static", rule.href)
-                )
+                css_path = os.path.abspath(os.path.join(app.outdir, "_static", rule.href))
                 css_imported = open(css_path, encoding="utf-8").read()
                 sheet_imported = cssutils.parseString(css_imported)
                 out += parse_css(sheet_imported)
@@ -109,9 +101,7 @@ def setup_css_tag_helper(
     context["css_tag"] = css_tag
 
 
-def setup_js_tag_helper(
-    app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node
-) -> None:
+def setup_js_tag_helper(app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node) -> None:
 
     pathto = context.get("pathto")
 
@@ -131,14 +121,10 @@ def setup_js_tag_helper(
             if js.filename:
                 uri = pathto(js.filename, resource=True)
                 js_basename = os.path.basename(uri)
-                js_path = os.path.normpath(
-                    os.path.join(app.outdir, "_static", js_basename)
-                )
+                js_path = os.path.normpath(os.path.join(app.outdir, "_static", js_basename))
 
                 if not os.path.exists(js_path):
-                    logger.warning(
-                        "[sphinx_mekki] js_path={} not found".format(js_path)
-                    )
+                    logger.warning("[sphinx_mekki] js_path={} not found".format(js_path))
                 else:
                     body = open(js_path, encoding="utf-8").read()
                 body = rjsmin.jsmin(body)
@@ -177,9 +163,7 @@ class MekkiImageConverter(ImageConverter):
 
 
 def add_static_path(app: Sphinx) -> None:
-    app.config.html_static_path.append(
-        os.path.join(os.path.abspath(os.path.dirname(__file__)), "_static")
-    )
+    app.config.html_static_path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), "_static"))
 
 
 download_index = {}
@@ -198,9 +182,7 @@ def visit_download_reference_html(writer: MekkiHTML5Translator, node: Element) -
         download_index[writer.builder.current_docname] = 0
     download_index[writer.builder.current_docname] += 1
 
-    path = os.path.join(
-        writer.builder.srcdir, os.path.dirname(writer.builder.current_docname)
-    )
+    path = os.path.join(writer.builder.srcdir, os.path.dirname(writer.builder.current_docname))
     path = os.path.join(path, node["reftarget"])
     path = os.path.normpath(path)
     basename = os.path.basename(path)
@@ -209,10 +191,7 @@ def visit_download_reference_html(writer: MekkiHTML5Translator, node: Element) -
 
     script_atts = {"type": "text/javascript"}
     writer.body.append(writer.starttag(node, "script", "", **script_atts))
-    writer.body.append(
-        "var content_%d = '%s';"
-        % (download_index[writer.builder.current_docname], base64_str)
-    )
+    writer.body.append("var content_%d = '%s';" % (download_index[writer.builder.current_docname], base64_str))
     writer.body.append("</script>\n")
 
     atts = {
@@ -250,9 +229,7 @@ class MekkiHTML5Translator(HTML5Translator):
                 docname = self.docnames[-1]
                 anchorname = "{}/#{}".format(docname, node.parent["ids"][0])
                 if anchorname not in self.builder.secnumbers:
-                    anchorname = (
-                        "%s/" % docname
-                    )  # try first heading which has no anchor
+                    anchorname = "%s/" % docname  # try first heading which has no anchor
             else:
                 anchorname = "#" + node.parent["ids"][0]
                 if anchorname not in self.builder.secnumbers:
@@ -278,15 +255,11 @@ class MekkiHTML5Translator(HTML5Translator):
             atts["class"] += " external"
         if "refuri" in node:
             atts["href"] = node["refuri"] or "#"
-            if self.settings.cloak_email_addresses and atts["href"].startswith(
-                "mailto:"
-            ):
+            if self.settings.cloak_email_addresses and atts["href"].startswith("mailto:"):
                 atts["href"] = self.cloak_mailto(atts["href"])
                 self.in_mailto = True
         else:
-            assert (
-                "refid" in node
-            ), 'References must have "refuri" or "refid" attribute.'
+            assert "refid" in node, 'References must have "refuri" or "refid" attribute.'
             atts["href"] = "#" + node["refid"]
         if not isinstance(node.parent, nodes.TextElement):
             assert len(node) == 1 and isinstance(node[0], nodes.image)  # NoQA: PT018
@@ -301,9 +274,7 @@ class MekkiHTML5Translator(HTML5Translator):
             # modified to use get_secnumber(node) instead of node['secnumber']
             secnumber = self.get_secnumber(node)
             if secnumber:
-                self.body.append(
-                    ("%s" + self.secnumber_suffix) % ".".join(map(str, secnumber))
-                )
+                self.body.append(("%s" + self.secnumber_suffix) % ".".join(map(str, secnumber)))
 
 
 class MekkiTocTreeCollector(TocTreeCollector):
@@ -333,9 +304,7 @@ class MekkiTocTreeCollector(TocTreeCollector):
                 if keys:
                     remove_len = len(env.toc_secnumbers[docname][keys[0]])
                     for key in keys:
-                        env.toc_secnumbers[docname][key] = env.toc_secnumbers[docname][
-                            key
-                        ][remove_len:]
+                        env.toc_secnumbers[docname][key] = env.toc_secnumbers[docname][key][remove_len:]
         rewrite_needed = []
         return rewrite_needed
 
@@ -363,9 +332,7 @@ def build_finished(app: Sphinx, exception: Exception) -> None:
         shutil.rmtree(d)
 
 
-def update_page_context(
-    app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node
-) -> None:
+def update_page_context(app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node) -> None:
     if "display_toc" in context:
         context["display_toc"] = app.builder.env.toc_num_entries[pagename] > 0
 
