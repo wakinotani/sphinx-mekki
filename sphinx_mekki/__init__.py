@@ -91,8 +91,7 @@ def setup_css_tag_helper(
         uri = pathto(css.filename, resource=True)
         attrs.append(f'href="{uri}"')
 
-        uri_basename = os.path.basename(uri)
-        css_path = os.path.abspath(os.path.join(app.outdir, "_static", uri_basename))
+        css_path = os.path.abspath(os.path.join(app.outdir, os.path.dirname(pagename), uri))
 
         css_basename = os.path.basename(css.filename)
         if css_basename == "pygments.css":
