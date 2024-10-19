@@ -120,8 +120,7 @@ def setup_js_tag_helper(app: Sphinx, pagename: str, templatename: str, context: 
                         attrs.append(f'{key}="{html.escape(value, True)}"')
             if js.filename:
                 uri = pathto(js.filename, resource=True)
-                js_basename = os.path.basename(uri)
-                js_path = os.path.normpath(os.path.join(app.outdir, "_static", js_basename))
+                js_path = os.path.abspath(os.path.join(app.outdir, os.path.dirname(pagename), uri))
 
                 if not os.path.exists(js_path):
                     logger.warning("[sphinx_mekki] js_path={} not found".format(js_path))
