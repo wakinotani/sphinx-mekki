@@ -377,7 +377,7 @@ def setup(app: Sphinx) -> dict[str, Any]:
     app.connect("html-page-context", update_page_context)
 
     # remove unused files
-    app.connect("build-finished", build_finished)
+    app.connect("build-finished", build_finished, priority=950)
 
     return {
         "version": __version__,
