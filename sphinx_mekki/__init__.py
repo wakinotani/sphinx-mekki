@@ -32,7 +32,13 @@ def guess_mimetype(filename: str) -> str:
 
 
 def convert_to_base64_str(filename: str) -> str:
-    return base64.b64encode(open(filename, "rb").read()).decode("utf-8")
+    if not hasattr(convert_to_base64_str, "cache"):
+        convert_to_base64_str.cache = {}
+    if filename in convert_to_base64_str.cache:
+        return convert_to_base64_str.cache[filename]
+    ret = base64.b64encode(open(filename, "rb").read()).decode("utf-8")
+    convert_to_base64_str.cache[filename] = ret
+    return ret
 
 
 def convert_to_data_uri(filename: str) -> str:
@@ -59,6 +65,8 @@ def embed_logo(app: Sphinx, pagename: str, templatename: str, context: dict, doc
 
 def setup_css_tag_helper(app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node) -> None:
 
+    if not hasattr(setup_css_tag_helper, "cache"):
+        setup_css_tag_helper.cache = {}
     pathto = context.get("pathto")
 
     def parse_css(sheet: cssutils.css.CSSStyleSheet) -> str:
@@ -75,6 +83,8 @@ def setup_css_tag_helper(app: Sphinx, pagename: str, templatename: str, context:
         return out
 
     def css_tag(css: Stylesheet) -> str:
+        if css in setup_css_tag_helper.cache:
+            return setup_css_tag_helper.cache[css]
         attrs = []
         for key in sorted(css.attributes):
             value = css.attributes[key]
@@ -95,17 +105,23 @@ def setup_css_tag_helper(app: Sphinx, pagename: str, templatename: str, context:
         sheet = cssutils.parseString(body)
         body = parse_css(sheet)
 
-        # return '<style type="text/css">\n{}</style>'.format(body)
-        return '<style type="text/css">{}</style>'.format(body.replace("\n", ""))
+        # ret = '<style type="text/css">\n{}</style>'.format(body)
+        ret = '<style type="text/css">{}</style>'.format(body.replace("\n", ""))
+        setup_css_tag_helper.cache[css] = ret
+        return ret
 
     context["css_tag"] = css_tag
 
 
 def setup_js_tag_helper(app: Sphinx, pagename: str, templatename: str, context: dict, doctree: Node) -> None:
 
+    if not hasattr(setup_js_tag_helper, "cache"):
+        setup_js_tag_helper.cache = {}
     pathto = context.get("pathto")
 
     def js_tag(js: JavaScript) -> str:
+        if js in setup_js_tag_helper.cache:
+            return setup_js_tag_helper.cache[js]
         attrs = []
         body = ""
         if isinstance(js, JavaScript):
@@ -137,6 +153,7 @@ def setup_js_tag_helper(app: Sphinx, pagename: str, templatename: str, context: 
             ret = f'<script {" ".join(attrs)}>{body}</script>'
         else:
             ret = f"<script>{body}</script>"
+        setup_js_tag_helper.cache[js] = ret
         return ret
 
     context["js_tag"] = js_tag
