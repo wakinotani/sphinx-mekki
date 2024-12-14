@@ -20,6 +20,7 @@ from sphinx.builders.html import JavaScript, Stylesheet
 from sphinx.writers.html import HTML5Translator
 from sphinx.environment import BuildEnvironment
 from sphinx.environment.collectors.toctree import TocTreeCollector
+from sphinx.util.images import get_image_size
 
 __version__ = "0.8.2"
 
@@ -174,6 +175,12 @@ class MekkiImageConverter(ImageConverter):
             node["alt"] = node["uri"]
             path = os.path.join(self.app.srcdir, node["uri"])
             node["uri"] = convert_to_data_uri(path)
+            # node having a scale attribute, but neither width nor height
+            if "scale" in node:
+                if not ("width" in node or "height" in node):
+                    size = get_image_size(path)
+                    node["width"] = str(size[0])
+                    node["height"] = str(size[1])
         except Exception as e:
             logger.error(e)
 
