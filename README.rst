@@ -2,7 +2,7 @@
 sphinx-mekki
 ========================================================================
 
-A `sphinx <https://www.sphinx-doc.org>`_ extension to embed images/downloads/CSSs/JSs to single HTML file.
+A `Sphinx <https://www.sphinx-doc.org>`_ extension to embed images, download files, CSSs, and JSs into a single HTML file.
 
 Installation
 ========================================================================
@@ -22,7 +22,7 @@ You must add ``sphinx_mekki`` to your extensions list in your ``conf.py``.
 
    extensions = [... , "sphinx_mekki", ...]
 
-You are optionally able to change the html_theme to ``mekki`` in your ``conf.py`` to generate simple HTML files. (Hopefully any HTML theme should work with this extension.)
+You are optionally able to change the html_theme to ``mekki`` in the ``conf.py`` to generate simple HTML files with minimal dependency on other pages. (Hopefully, this extension should work with any HTML theme that complies with Sphinx.)
 
 .. code-block:: python
 
