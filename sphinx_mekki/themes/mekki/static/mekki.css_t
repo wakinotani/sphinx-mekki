@@ -312,11 +312,12 @@ div.code-block-caption {
 div.sphinxsidebar ul ul,
 div.sphinxsidebar ul.want-points {
     margin-left: 10px;
-    list-style: none;
+    list-style-type: disc;
 }
 
 ol, ul {
     padding-left: 20px;
+    list-style-type: disc;
 }
 
 .align-default {
