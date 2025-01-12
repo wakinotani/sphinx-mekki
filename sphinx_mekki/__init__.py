@@ -27,9 +27,14 @@ __version__ = "0.8.4"
 logger = logging.getLogger(__name__)
 
 
+EXT_NAME = "sphinx-mekki"
+
+
 def guess_mimetype(filename: str) -> str:
+    if not filename:
+        raise ValueError(f"[{EXT_NAME}] filename cannot be empty or None.")
     mimetype = mimetypes.guess_type(filename, strict=False)[0]
-    return mimetype
+    return mimetype if mimetype else "application/octet-stream"
 
 
 def convert_to_base64_str(filename: str) -> str:
