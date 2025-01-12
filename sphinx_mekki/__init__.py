@@ -373,6 +373,17 @@ def update_page_context(app: Sphinx, pagename: str, templatename: str, context: 
         context["display_toc"] = app.builder.env.toc_num_entries[pagename] > 0
 
 
+def setup_cssutils() -> None:
+
+    import logging
+
+    # suppress cssutils logging messages
+    cssutils.log.setLevel(logging.CRITICAL)
+
+    # Use minified CSS
+    cssutils.ser.prefs.useMinified()
+
+
 def setup(app: Sphinx) -> dict[str, Any]:
 
     # add mekki_simple theme
@@ -387,10 +398,9 @@ def setup(app: Sphinx) -> dict[str, Any]:
     app.connect("html-page-context", embed_favicon)
     app.connect("html-page-context", embed_logo)
 
-    # suppress cssutils logging messages
-    import logging
+    # setup cssutils
+    setup_cssutils()
 
-    cssutils.log.setLevel(logging.CRITICAL)
     # embed css
     app.connect("html-page-context", setup_css_tag_helper)
 
