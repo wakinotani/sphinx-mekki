@@ -23,7 +23,7 @@ from sphinx.environment import BuildEnvironment
 from sphinx.environment.collectors.toctree import TocTreeCollector
 from sphinx.util.images import get_image_size
 
-__version__ = "0.8.4"
+__version__ = "0.8.5"
 
 logger = logging.getLogger(__name__)
 
