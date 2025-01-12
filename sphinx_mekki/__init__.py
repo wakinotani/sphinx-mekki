@@ -44,8 +44,18 @@ def convert_to_base64_str(filename: str) -> str:
         convert_to_base64_str.cache = {}
     if filename in convert_to_base64_str.cache:
         return convert_to_base64_str.cache[filename]
-    ret = base64.b64encode(open(filename, "rb").read()).decode("utf-8")
-    convert_to_base64_str.cache[filename] = ret
+    ret = ""
+    try:
+        with open(filename, "rb") as file:
+            content = file.read()
+            ret = base64.b64encode(content).decode("utf-8")
+            convert_to_base64_str.cache[filename] = ret
+    except FileNotFoundError:
+        logger.error(f"[{EXT_NAME}] File not found: {filename}")
+        raise
+    except Exception as e:
+        logger.error(f"[{EXT_NAME}] Exception: {e}")
+        raise
     return ret
 
 
