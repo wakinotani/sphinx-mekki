@@ -8,6 +8,7 @@ import rjsmin
 import cssutils
 import mimetypes
 import shutil
+import re
 from typing import Any
 from docutils import nodes
 from docutils.nodes import Node
@@ -89,14 +90,75 @@ def setup_css_tag_helper(app: Sphinx, pagename: str, templatename: str, context:
         setup_css_tag_helper.cache = {}
     pathto = context.get("pathto")
 
-    def parse_css(sheet: cssutils.css.CSSStyleSheet) -> str:
+    def parse_css(css_path: str) -> str:
+        css_basename = os.path.basename(css_path)
+        body = ""
+        if css_basename == "pygments.css":
+            body = app.builder.highlighter.get_stylesheet()
+        else:
+            try:
+                with open(css_path, "r", encoding="utf-8") as file:
+                    body = file.read()
+            except FileNotFoundError:
+                logger.error(f"[{EXT_NAME}] CSS file not found: {css_path}")
+                raise
+            except Exception as e:
+                logger.error(f"[{EXT_NAME}] Exception: {e}")
+                raise
+        try:
+            sheet = cssutils.parseString(body)
+        except Exception as e:
+            logger.error(f"[{EXT_NAME}] Exception: {e}")
+            raise RuntimeError(f"[{EXT_NAME}] Failed to parse CSS file: {css_path}")
+
         out = ""
         for rule in sheet.cssRules:
             if rule.type == cssutils.css.CSSRule.IMPORT_RULE:
-                css_path = os.path.abspath(os.path.join(app.outdir, "_static", rule.href))
-                css_imported = open(css_path, encoding="utf-8").read()
-                sheet_imported = cssutils.parseString(css_imported)
-                out += parse_css(sheet_imported)
+                import_css_path = os.path.abspath(os.path.join(app.outdir, "_static", rule.href))
+                out += parse_css(import_css_path)
+            elif rule.type == cssutils.css.CSSRule.FONT_FACE_RULE:
+                for prop in rule.style:
+                    if prop.name == "src":
+                        src_prop_value = ""
+                        # prop.value is comma-separated str. convert to python list.
+                        font_src_list = prop.value.strip().split(",")
+                        # logger.info(f"[{EXT_NAME}] font_src_list={font_src_list}")
+                        for i, font_src in enumerate(font_src_list):
+                            # font_src is whitespace-separated str. convert to python list
+                            # logger.info(f"[{EXT_NAME}] font_src={font_src}")
+                            font_src_item_list = font_src.split()
+                            for font_src_item in font_src_item_list:
+                                # logger.info(f"----\n[{EXT_NAME}] font_src_item = {font_src_item}")
+                                converted = False
+                                # typical font_src_item is url(font_path?sha1#anchor) or local(font_name).
+                                # tokenize with regular expressions. (extracting "url(font?sha1#anchor).)
+                                pattern = r"\b(\w+)\s*\(([^?]*)([^#]*)([^)]*)\)"
+                                match = re.search(pattern, font_src_item)
+                                # check the type is url and the url is a local path
+                                if match and match.group(1) == "url" and not isurl(match.group(2)):
+                                    # logger.info(f"[{EXT_NAME}] type    : {match.group(1)}")
+                                    # logger.info(f"[{EXT_NAME}] font    : {match.group(2)}")
+                                    # logger.info(f"[{EXT_NAME}] sha1    : {match.group(3)}")
+                                    # logger.info(f"[{EXT_NAME}] anchor  : {match.group(4)}")
+                                    font_path = os.path.abspath(
+                                        os.path.join(os.path.dirname(css_path), match.group(2))
+                                    )
+                                    # logger.info(f"[{EXT_NAME}] path    : {font_path}")
+                                    if os.path.exists(font_path):
+                                        datauri = convert_to_data_uri(font_path)
+                                        converted = True
+                                        src_prop_value += " url(" + datauri + ")"
+                                    else:
+                                        logger.warning(f"[{EXT_NAME}] Font file not found: {font_path}")
+                                if not converted:
+                                    src_prop_value += " " + font_src_item
+                            # append a comma to src_prop_value (to concat next font_src)
+                            if i < (len(font_src_list) - 1):
+                                src_prop_value += ","
+                        # update font-src-list prop.value
+                        prop.value = src_prop_value
+                out += rule.cssText
+                out += "\n"
             elif not (rule.cssText is None or rule.cssText == ""):
                 out += rule.cssText
                 out += "\n"
@@ -107,6 +169,7 @@ def setup_css_tag_helper(app: Sphinx, pagename: str, templatename: str, context:
             raise ValueError(f"[{EXT_NAME}] css cannot be None.")
         if css in setup_css_tag_helper.cache:
             return setup_css_tag_helper.cache[css]
+        ret = ""
         attrs = []
         for key in sorted(css.attributes):
             value = css.attributes[key]
@@ -116,20 +179,13 @@ def setup_css_tag_helper(app: Sphinx, pagename: str, templatename: str, context:
         attrs.append(f'href="{uri}"')
 
         css_path = os.path.abspath(os.path.join(app.outdir, os.path.dirname(pagename), uri))
-
-        css_basename = os.path.basename(css.filename)
-        if css_basename == "pygments.css":
-            body = app.builder.highlighter.get_stylesheet()
-        else:
-            body = open(css_path, encoding="utf-8").read()
-
-        cssutils.ser.prefs.useMinified()
-        sheet = cssutils.parseString(body)
-        body = parse_css(sheet)
-
-        # ret = '<style type="text/css">\n{}</style>'.format(body)
-        ret = '<style type="text/css">{}</style>'.format(body.replace("\n", ""))
-        setup_css_tag_helper.cache[css] = ret
+        if os.path.exists(css_path):
+            try:
+                body = parse_css(css_path)
+                ret = '<style type="text/css">{}</style>'.format(body.replace("\n", ""))
+                setup_css_tag_helper.cache[css] = ret
+            except Exception as e:
+                logger.error(f"[{EXT_NAME}] Exception: {e}")
         return ret
 
     context["css_tag"] = css_tag
@@ -161,12 +217,20 @@ def setup_js_tag_helper(app: Sphinx, pagename: str, templatename: str, context: 
             if js.filename:
                 uri = pathto(js.filename, resource=True)
                 js_path = os.path.abspath(os.path.join(app.outdir, os.path.dirname(pagename), uri))
-
-                if not os.path.exists(js_path):
-                    logger.warning("[sphinx_mekki] js_path={} not found".format(js_path))
-                else:
-                    body = open(js_path, encoding="utf-8").read()
-                body = rjsmin.jsmin(body)
+                try:
+                    with open(js_path, "r", encoding="utf-8") as file:
+                        body = file.read()
+                except FileNotFoundError:
+                    logger.error(f"[{EXT_NAME}] JS file not found: {js_path}")
+                    raise
+                except Exception as e:
+                    logger.error(f"[{EXT_NAME}] Exception: {e}")
+                    raise
+                try:
+                    body = rjsmin.jsmin(body)
+                except Exception as e:
+                    logger.error(f"[{EXT_NAME}] Exception: {e}")
+                    raise RuntimeError(f"[{EXT_NAME}] Failed to parse JS file: {js_path}")
 
         else:
             # str value (old styled)
