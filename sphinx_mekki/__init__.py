@@ -38,6 +38,8 @@ def guess_mimetype(filename: str) -> str:
 
 
 def convert_to_base64_str(filename: str) -> str:
+    if not filename:
+        raise ValueError(f"[{EXT_NAME}] filename cannot be empty or None.")
     if not hasattr(convert_to_base64_str, "cache"):
         convert_to_base64_str.cache = {}
     if filename in convert_to_base64_str.cache:
@@ -48,6 +50,8 @@ def convert_to_base64_str(filename: str) -> str:
 
 
 def convert_to_data_uri(filename: str) -> str:
+    if not filename:
+        raise ValueError(f"[{EXT_NAME}] filename cannot be empty or None.")
     mimetype = guess_mimetype(filename)
     data_uri = "data:{};base64,{}".format(mimetype, convert_to_base64_str(filename))
     return data_uri
@@ -89,6 +93,8 @@ def setup_css_tag_helper(app: Sphinx, pagename: str, templatename: str, context:
         return out
 
     def css_tag(css: Stylesheet) -> str:
+        if not css:
+            raise ValueError(f"[{EXT_NAME}] css cannot be None.")
         if css in setup_css_tag_helper.cache:
             return setup_css_tag_helper.cache[css]
         attrs = []
@@ -126,6 +132,8 @@ def setup_js_tag_helper(app: Sphinx, pagename: str, templatename: str, context: 
     pathto = context.get("pathto")
 
     def js_tag(js: JavaScript) -> str:
+        if not js:
+            raise ValueError(f"[{EXT_NAME}] js cannot be None.")
         if js in setup_js_tag_helper.cache:
             return setup_js_tag_helper.cache[js]
         attrs = []
