@@ -205,7 +205,7 @@ class MekkiImageConverter(ImageConverter):
                     node["width"] = str(size[0])
                     node["height"] = str(size[1])
         except Exception as e:
-            logger.error(e)
+            logger.error(f"[{EXT_NAME}] Exception: {e}")
 
 
 def add_static_path(app: Sphinx) -> None:
