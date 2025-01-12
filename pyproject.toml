@@ -8,7 +8,7 @@ version = "0.8.4"
 authors = [
   { name="Yoshiyuki Wakinotani", email="wakinotani@gmail.com" },
 ]
-description = "A sphinx extension to embed images/downloads/CSSs/JSs to single HTML file."
+description = "A Sphinx extension to embed images, download files, CSSs, and JSs into a single HTML file."
 readme = "README.rst"
 requires-python = ">=3.8"
 classifiers = [
