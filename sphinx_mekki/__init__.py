@@ -72,7 +72,7 @@ def embed_favicon(app: Sphinx, pagename: str, templatename: str, context: dict, 
     favicon_url = app.builder.globalcontext["favicon_url"]
     if favicon_url and not isurl(favicon_url):
         # convert favicon file to data_URI
-        favicon_path = os.path.join(app.srcdir, favicon_url)
+        favicon_path = os.path.abspath(os.path.join(app.outdir, "_static", favicon_url))
         context["favicon_url"] = convert_to_data_uri(favicon_path)
 
 
@@ -80,7 +80,7 @@ def embed_logo(app: Sphinx, pagename: str, templatename: str, context: dict, doc
     logo_url = app.builder.globalcontext["logo_url"]
     if logo_url and not isurl(logo_url):
         # convert logo file to data_URI
-        logo_path = os.path.join(app.srcdir, logo_url)
+        logo_path = os.path.abspath(os.path.join(app.outdir, "_static", logo_url))
         context["logo_url"] = convert_to_data_uri(logo_path)
 
 
