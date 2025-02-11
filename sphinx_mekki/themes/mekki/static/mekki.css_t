@@ -43,7 +43,7 @@
 	--mkc-doc-code-fg: var(--mkc-glay80);
 	--mkc-doc-anchor: var(--mkc-blue);
 	--mkc-doc-anchor-hover: var(--mkc-red);
-	--mkc-doc-cblk-caption-bg: var(--mkc-glay15);
+	--mkc-doc-cblk-caption-bg: var(--mkc-glay10);
 	--mkc-doc-cblk-bg: var(--mkc-glay05);
 	--mkc-doc-cblk-linenos-fg: var(--mkc-glay40);
 	/* admonition */
@@ -52,9 +52,11 @@
 	--mkc-doc-warning-dir: var(--mkc-pink);
 	--mkc-doc-tip-dir: var(--mkc-cyan);
 	/* table */
-	--mkc-doc-th-bg: var(--mkc-glay05);
+	--mkc-doc-th-bg: var(--mkc-glay10);
 	--mkc-doc-th-border: var(--mkc-glay40);
 	--mkc-doc-td-border: var(--mkc-glay20);
+	/* scrollbar */
+	--mkc-scrollbar-bg: var(--mkc-glay20);
 
 	/* div.sphinxsidebar */
 	--mkc-sb-bg: var(--mkc-glay05);
@@ -180,8 +182,15 @@ div.sphinxsidebar p.logo {
 }
 
 div.sphinxsidebar ul {
-	margin: 8px;
+	margin: 8px 4px 8px 8px;
 	padding: 0;
+}
+
+div.sphinxsidebar ul ul,
+div.sphinxsidebar ul.want-points {
+	margin-left: 16px;
+	margin-right: 0px;
+	list-style-type: disc;
 }
 
 div.sphinxsidebar a {
@@ -331,7 +340,7 @@ div.tip {
 
 pre {
 	font-family: var(--mkf-monospace);
-	padding: 0.5em;
+	padding: 0.5em 2.0em 0.5em 0.5em;
 	line-height: 1.2em;
 	margin: 1.5em 0 1.5em 0;
 }
@@ -345,7 +354,7 @@ code {
 div.code-block-caption {
 	margin: 0;
 	padding: 0 5px;
-	font-size: 1.0em;
+	font-size: 0.8em;
 	line-height: 1.7em;
 	background-color: var(--mkc-doc-cblk-caption-bg);
 }
@@ -363,12 +372,6 @@ span.linenos {
 	padding-right: 20px;
 	user-select: none;
 	color: var(--mkc-doc-cblk-linenos-fg);
-}
-
-div.sphinxsidebar ul ul,
-div.sphinxsidebar ul.want-points {
-	margin-left: 10px;
-	list-style-type: disc;
 }
 
 div.line-block {
@@ -435,12 +438,28 @@ table.footnote td, table.footnote th {
 
 th {
 	color: var(--mkc-doc-fg);
+	font-weight: normal;
 	text-align: left;
 	padding-right: 5px;
 }
 
 table span.caption-number {
 	margin-right: 1.0em;
+}
+
+::-webkit-scrollbar {
+	height: 8px;
+	width: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: var(--mkc-scrollbar-bg);
+	border-radius: 16px;
+	border: transparent;
 }
 
 
