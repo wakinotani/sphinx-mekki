@@ -42,6 +42,7 @@
 	--mkc-doc-code-bg: var(--mkc-glay15);
 	--mkc-doc-code-fg: var(--mkc-glay80);
 	--mkc-doc-anchor: var(--mkc-blue);
+	--mkc-doc-anchor-visited: var(--mkc-blue);
 	--mkc-doc-anchor-hover: var(--mkc-red);
 	--mkc-doc-cblk-caption-bg: var(--mkc-glay10);
 	--mkc-doc-cblk-bg: var(--mkc-glay05);
@@ -213,6 +214,11 @@ code.download:hover {
 
 a {
 	color: var(--mkc-doc-anchor);
+	text-decoration: none;
+}
+
+a:visited {
+	color: var(--mkc-doc-anchor-visited);
 	text-decoration: none;
 }
 
