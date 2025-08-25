@@ -182,6 +182,7 @@ div.sphinxsidebar p.logo {
 	padding: 0;
 }
 
+div.sphinxsidebar h1, h2, h3, h4, h5, h6,
 div.sphinxsidebar ul {
 	margin: 8px 4px 8px 8px;
 	padding: 0;
