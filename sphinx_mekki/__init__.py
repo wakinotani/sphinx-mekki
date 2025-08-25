@@ -1,4 +1,4 @@
-""" sphinx-mekki """
+"""sphinx-mekki"""
 
 from __future__ import annotations
 import os
@@ -22,8 +22,9 @@ from sphinx.writers.html import HTML5Translator
 from sphinx.environment import BuildEnvironment
 from sphinx.environment.collectors.toctree import TocTreeCollector
 from sphinx.util.images import get_image_size
+from importlib.metadata import version
 
-__version__ = "0.8.8"
+__version__ = version("sphinx-mekki")
 
 logger = logging.getLogger(__name__)
 
